@@ -1,7 +1,5 @@
 package example;
 
-import java.util.Collections;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +16,6 @@ public class MyApplication {
 
     public static void main(String[] args) {
         var app = new SpringApplication(MyApplication.class);
-        app.setDefaultProperties(Collections
-                .singletonMap("server.port", "8083"));
         app.run(args);
     }
 }
