@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @SpringBootApplication
-public class MyApplication {
+public class Database_service {
 
     private final MemberRepository memberRepository;
     private final MessageRepository messageRepository;
     private final SubscriptionRepository subscriptionRepository;
 
     @Autowired
-    public MyApplication(MemberRepository memberRepository, MessageRepository messageRepository,
+    public Database_service(MemberRepository memberRepository, MessageRepository messageRepository,
             SubscriptionRepository subscriptionRepository) {
         this.memberRepository = memberRepository;
         this.messageRepository = messageRepository;
@@ -133,7 +133,7 @@ public class MyApplication {
     }
 
     public static void main(String[] args) {
-        var app = new SpringApplication(MyApplication.class);
+        var app = new SpringApplication(Database_service.class);
         app.run(args);
     }
 }
