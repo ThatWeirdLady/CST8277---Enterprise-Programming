@@ -42,7 +42,7 @@ public class SubscribeService {
 
     // Create Subscription
     @PostMapping("/producers/{producerId}/subscribe")
-    void subscribe(@RequestHeader("SUBSCRIBER-ID") String subscriberId, @PathVariable String producerId) {
+    void subscribe(@RequestHeader("USER-ID") String subscriberId, @PathVariable String producerId) {
         Subscription newSub = new Subscription(producerId, subscriberId);
 
         database.post()
@@ -55,7 +55,7 @@ public class SubscribeService {
     }
 
     @PostMapping("/producers/{producerId}/unsubscribe")
-    void unsubscribe(@RequestHeader("SUBSCRIBER-ID") String subscriberId, @PathVariable String producerId) {
+    void unsubscribe(@RequestHeader("USER-ID") String subscriberId, @PathVariable String producerId) {
         List<Subscription> subscriptions = database.get()
                 .uri("/subscriptions/producer/" + producerId)
                 .retrieve()

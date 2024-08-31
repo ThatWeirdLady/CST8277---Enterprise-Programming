@@ -41,7 +41,9 @@ public class AppConfig {
                                                         "8ee28bdc-86e0-4b29-bb59-21a5306b7ec9"),
                                         new Message("9cc99b4b-2d9d-49f5-94b1-69f643420b42",
                                                         "New opera single just dropped! Check it out on Looney Tunes!",
-                                                        "8ee28bdc-86e0-4b29-bb59-21a5306b7ec9"));
+                                                        "8ee28bdc-86e0-4b29-bb59-21a5306b7ec9"),
+                                        new Message("54fc45f0-d060-426d-8340-2c92c8fb02dc", "Hey Baby!",
+                                                        "f6be4699-ccb9-4c52-b6ae-91f5d4056fca"));
 
                         messageRepository.saveAll(messagesList);
 
