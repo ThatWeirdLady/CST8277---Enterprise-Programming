@@ -54,6 +54,7 @@ public class SubscribeService {
         return;
     }
 
+    // 'Delete' subscription
     @PostMapping("/producers/{producerId}/unsubscribe")
     void unsubscribe(@RequestHeader("USER-ID") String subscriberId, @PathVariable String producerId) {
         List<Subscription> subscriptions = database.get()
