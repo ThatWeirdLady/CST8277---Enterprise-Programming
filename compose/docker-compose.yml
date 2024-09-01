@@ -1,0 +1,61 @@
+networks:
+  mynetwork:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+services:
+  postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: twit
+    networks:
+      mynetwork:
+        ipv4_address: 172.20.0.5
+
+  databaseservice:
+    image: dbs:latest
+    ports:
+      - 8085:8085
+    restart: always
+    depends_on:
+      - postgres
+    networks:
+      mynetwork:
+        ipv4_address: 172.20.0.6
+
+  memberservice:
+    image: mms:latest
+    ports:
+      - 8088:8088
+    restart: always
+    depends_on:
+      - databaseservice
+    networks:
+      mynetwork:
+        ipv4_address: 172.20.0.7
+
+  subscriptionservice:
+    image: ss:latest
+    ports:
+      - 8086:8086
+    restart: always
+    depends_on:
+      - databaseservice
+    networks:
+      mynetwork:
+        ipv4_address: 172.20.0.8
+
+  messagesservice:
+    image: ms:latest
+    ports:
+      - 8087:8087
+    restart: always
+    depends_on:
+      - databaseservice
+    networks:
+      mynetwork:
+        ipv4_address: 172.20.0.9

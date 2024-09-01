@@ -27,9 +27,9 @@ public class message_service {
 
     public message_service() {
         database = WebClient.builder()
-                .baseUrl("http://localhost:8085")
+                .baseUrl("http://172.20.0.6:8085")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultUriVariables(Collections.singletonMap("url", "http://localhost:8085"))
+                .defaultUriVariables(Collections.singletonMap("url", "http://172.20.0.6:8085"))
                 .build();
     }
 
