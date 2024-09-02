@@ -46,7 +46,11 @@ public class memberManagement_service {
     // Get all Members
     // get Member by username
     @GetMapping("/members")
-    List<Member> getMembers(@RequestParam(required = false) String username) {
+    ResponseEntity<Object> getMembers(@RequestHeader("Authorization") String token,
+            @RequestParam(required = false) String username) {
+        boolean valid = validate(token);
+        if (!valid)
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         List<Member> members = database.get()
                 .uri(uriBuilder -> {
                     var uri = uriBuilder.path("/members");
@@ -60,7 +64,7 @@ public class memberManagement_service {
                 .retrieve()
                 .bodyToFlux(Member.class)
                 .collectList().block();
-        return members;
+        return new ResponseEntity<>(members, HttpStatus.OK);
     }
 
     // Get user by id

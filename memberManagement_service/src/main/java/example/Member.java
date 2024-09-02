@@ -1,5 +1,7 @@
 package example;
 
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Member {
@@ -10,8 +12,8 @@ public class Member {
     public Member() {
     }
 
-    public Member(String id, String username, String password) {
-        this.id = id;
+    public Member(String username, String password) {
+        this.id = UUID.randomUUID().toString();
         this.username = username;
         this.password = password;
     }
