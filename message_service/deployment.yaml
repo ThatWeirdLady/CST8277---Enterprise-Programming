@@ -3,23 +3,23 @@ kind: Deployment
 metadata:
   creationTimestamp: null
     labels:
-      app: database
-      name: database
+      app: message
+      name: message
   spec:
   replicas: 1
     selector:
       matchLabels:
-          app: database
+          app: message
         strategy: {}
     template:
       metadata:
           creationTimestamp: null
             labels:
-              app: database
+              app: message
             spec:
           containers:
-            - image: cst8277/database-app:latest
-              name: database-app
+            - image: cst8277/message-app:latest
+              name: message-app
                 resources: {}
         status: {}
 ---
@@ -28,16 +28,16 @@ kind: Service
 metadata:
   creationTimestamp: null
     labels:
-      app: database
-      name: database
+      app: message
+      name: message
   spec:
   ports:
-    - name: 8085-8085
-      port: 8085
+    - name: 8087-8087
+      port: 8087
         protocol: TCP
-        targetPort: 8085
+        targetPort: 8087
       selector:
-      app: database
+      app: message
       type: NodePort
   status:
   loadBalancer: {}

@@ -55,13 +55,13 @@ public class message_service {
 
     // Create Message
     @PostMapping("/messages")
-    void createMessage(@RequestBody Message m) {
-        database.post()
+    Message createMessage(@RequestBody Message m) {
+        return database.post()
                 .uri("/messages")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(m), Message.class)
                 .retrieve()
-                .bodyToMono(Void.class).block();
+                .bodyToMono(Message.class).block();
 
     }
 

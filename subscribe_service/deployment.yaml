@@ -3,23 +3,23 @@ kind: Deployment
 metadata:
   creationTimestamp: null
     labels:
-      app: database
-      name: database
+      app: subscription
+      name: subscription
   spec:
   replicas: 1
     selector:
       matchLabels:
-          app: database
+          app: subscription
         strategy: {}
     template:
       metadata:
           creationTimestamp: null
             labels:
-              app: database
+              app: subscription
             spec:
           containers:
-            - image: cst8277/database-app:latest
-              name: database-app
+            - image: cst8277/subscription-app:latest
+              name: subscription-app
                 resources: {}
         status: {}
 ---
@@ -28,16 +28,16 @@ kind: Service
 metadata:
   creationTimestamp: null
     labels:
-      app: database
-      name: database
+      app: subscription
+      name: subscription
   spec:
   ports:
-    - name: 8085-8085
-      port: 8085
+    - name: 8086-8086
+      port: 8086
         protocol: TCP
-        targetPort: 8085
+        targetPort: 8086
       selector:
-      app: database
+      app: subscription
       type: NodePort
   status:
   loadBalancer: {}

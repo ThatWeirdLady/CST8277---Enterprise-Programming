@@ -3,23 +3,23 @@ kind: Deployment
 metadata:
   creationTimestamp: null
     labels:
-      app: database
-      name: database
+      app: member
+      name: member
   spec:
   replicas: 1
     selector:
       matchLabels:
-          app: database
+          app: member
         strategy: {}
     template:
       metadata:
           creationTimestamp: null
             labels:
-              app: database
+              app: member
             spec:
           containers:
-            - image: cst8277/database-app:latest
-              name: database-app
+            - image: cst8277/member-app:latest
+              name: member-app
                 resources: {}
         status: {}
 ---
@@ -28,16 +28,16 @@ kind: Service
 metadata:
   creationTimestamp: null
     labels:
-      app: database
-      name: database
+      app: member
+      name: member
   spec:
   ports:
-    - name: 8085-8085
-      port: 8085
+    - name: 8088-8088
+      port: 8088
         protocol: TCP
-        targetPort: 8085
+        targetPort: 8088
       selector:
-      app: database
+      app: member
       type: NodePort
   status:
   loadBalancer: {}
