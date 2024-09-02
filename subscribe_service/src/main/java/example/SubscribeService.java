@@ -5,8 +5,9 @@ import java.util.List;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -29,34 +30,51 @@ public class SubscribeService {
                 .build();
     }
 
-    // Get all subscriptions
-    @GetMapping("/subscriptions")
-    List<Subscription> getSubscriptions() {
-        List<Subscription> out = database.get()
-                .uri("/subscriptions")
+    public Boolean validate(String token) {
+        Boolean valid = database.get()
+                .uri("/auth/validate")
+                .header("Authorization", token)
                 .retrieve()
-                .bodyToFlux(Subscription.class)
-                .collectList().block();
-        return out;
+                .bodyToMono(Boolean.class).block();
+        return valid;
     }
+
+    // // Get all subscriptions
+    // @GetMapping("/subscriptions")
+    // List<Subscription> getSubscriptions() {
+    // List<Subscription> out = database.get()
+    // .uri("/subscriptions")
+    // .retrieve()
+    // .bodyToFlux(Subscription.class)
+    // .collectList().block();
+    // return out;
+    // }
 
     // Create Subscription
     @PostMapping("/producers/{producerId}/subscribe")
-    void subscribe(@RequestHeader("USER-ID") String subscriberId, @PathVariable String producerId) {
+    ResponseEntity<Object> subscribe(@RequestHeader("Authorization") String token,
+            @RequestHeader("USER-ID") String subscriberId, @PathVariable String producerId) {
         Subscription newSub = new Subscription(producerId, subscriberId);
-
+        boolean valid = validate(token);
+        if (!valid)
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         database.post()
                 .uri("/subscriptions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(newSub), Subscription.class)
                 .retrieve()
                 .bodyToMono(Void.class).block();
-        return;
+        return new ResponseEntity<>("Subscription Added", HttpStatus.OK);
     }
 
     // 'Delete' subscription
     @PostMapping("/producers/{producerId}/unsubscribe")
-    void unsubscribe(@RequestHeader("USER-ID") String subscriberId, @PathVariable String producerId) {
+    ResponseEntity<Object> unsubscribe(@RequestHeader("Authorization") String token,
+            @RequestHeader("USER-ID") String subscriberId, @PathVariable String producerId) {
+
+        boolean valid = validate(token);
+        if (!valid)
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         List<Subscription> subscriptions = database.get()
                 .uri("/subscriptions/producer/" + producerId)
                 .retrieve()
@@ -70,6 +88,7 @@ public class SubscribeService {
                 break;
             }
         }
+        return new ResponseEntity<>("Subscription Removed", HttpStatus.OK);
     }
 
     public static void main(String[] args) {

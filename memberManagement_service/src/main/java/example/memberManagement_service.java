@@ -34,6 +34,15 @@ public class memberManagement_service {
                 .build();
     }
 
+    public Boolean validate(String token) {
+        Boolean valid = database.get()
+                .uri("/auth/validate")
+                .header("Authorization", token)
+                .retrieve()
+                .bodyToMono(Boolean.class).block();
+        return valid;
+    }
+
     // Get all Members
     // get Member by username
     @GetMapping("/members")
@@ -57,11 +66,7 @@ public class memberManagement_service {
     // Get user by id
     @GetMapping("/members/{id}")
     ResponseEntity<Object> getMember(@RequestHeader("Authorization") String token, @PathVariable String id) {
-        Boolean valid = database.get()
-                .uri("/auth/validate")
-                .header("Authorization", token)
-                .retrieve()
-                .bodyToMono(Boolean.class).block();
+        boolean valid = validate(token);
         if (!valid)
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         Member member = database.get()
@@ -87,12 +92,7 @@ public class memberManagement_service {
     @PutMapping("/members/{id}")
     ResponseEntity<Object> updateMember(@RequestHeader("Authorization") String token, @PathVariable String id,
             @RequestBody Member m) {
-        boolean valid = database.get()
-                .uri("/auth/validate")
-                .header("Authorization", token)
-                .retrieve()
-                .bodyToMono(Boolean.class).block();
-
+        boolean valid = validate(token);
         if (!valid)
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         database.put()
@@ -108,12 +108,7 @@ public class memberManagement_service {
     // Delete Member
     @DeleteMapping("/members/{id}")
     ResponseEntity<Object> deleteMember(@RequestHeader("Authorization") String token, @PathVariable String id) {
-        boolean valid = database.get()
-                .uri("/auth/validate")
-                .header("Authorization", token)
-                .retrieve()
-                .bodyToMono(Boolean.class).block();
-
+        boolean valid = validate(token);
         if (!valid)
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         database.delete()

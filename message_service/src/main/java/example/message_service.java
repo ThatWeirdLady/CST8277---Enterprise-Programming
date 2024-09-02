@@ -3,6 +3,8 @@ package example;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
-
+import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -33,10 +35,17 @@ public class message_service {
                 .build();
     }
 
-    // Get all messages, Get messages from specific Producer
-    @GetMapping("/messages")
-    List<Message> getMessages(@RequestParam(required = false) String producerId) {
-        List<Message> msgs = database.get()
+    public Boolean validate(String token) {
+        Boolean valid = database.get()
+                .uri("/auth/validate")
+                .header("Authorization", token)
+                .retrieve()
+                .bodyToMono(Boolean.class).block();
+        return valid;
+    }
+
+    List<Message> acqMessages(String producerId) {
+        return database.get()
                 .uri(uriBuilder -> {
                     var uri = uriBuilder.path("/messages");
 
@@ -49,34 +58,58 @@ public class message_service {
                 .retrieve()
                 .bodyToFlux(Message.class)
                 .collectList().block();
+    }
 
-        return msgs;
+    // Get all messages, Get messages from specific Producer
+    @GetMapping("/messages")
+    ResponseEntity<Object> getMessages(@RequestHeader("Authorization") String token,
+            @RequestParam(required = false) String producerId) {
+        boolean valid = validate(token);
+        if (!valid)
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+
+        List<Message> msgs = acqMessages(producerId);
+
+        return new ResponseEntity<>(msgs, HttpStatus.OK);
     }
 
     // Create Message
     @PostMapping("/messages")
-    Message createMessage(@RequestBody Message m) {
-        return database.post()
+    ResponseEntity<Object> createMessage(@RequestHeader("Authorization") String token, @RequestBody Message m) {
+        boolean valid = validate(token);
+        if (!valid)
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+
+        Message msg = database.post()
                 .uri("/messages")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(m), Message.class)
                 .retrieve()
                 .bodyToMono(Message.class).block();
+        return new ResponseEntity<>(msg, HttpStatus.OK);
 
     }
 
     // Delete message
     @DeleteMapping("/messages/{id}")
-    void deleteMessage(@PathVariable String id) {
+    ResponseEntity<Object> deleteMessage(@RequestHeader("Authorization") String token, @PathVariable String id) {
+        boolean valid = validate(token);
+        if (!valid)
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         database.delete()
                 .uri("/messages/" + id)
                 .retrieve()
                 .bodyToMono(Void.class).block();
+        return new ResponseEntity<>("Message Deleted", HttpStatus.OK);
     }
 
     // Get My Messages
     @GetMapping("/myMessages")
-    List<Message> getMyMessages(@RequestHeader("USER-ID") String userId) {
+    ResponseEntity<Object> getMyMessages(@RequestHeader("Authorization") String token,
+            @RequestHeader("USER-ID") String userId) {
+        boolean valid = validate(token);
+        if (!valid)
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         List<Subscription> subs = database.get()
                 .uri("/subscriptions/subscriber/" + userId)
                 .retrieve()
@@ -86,11 +119,11 @@ public class message_service {
         List<Message> myMessages = new ArrayList<>();
 
         for (Subscription s : subs) {
-            var l = getMessages(s.getProducerId());
+            var l = acqMessages(s.getProducerId());
             myMessages.addAll(l);
         }
 
-        return myMessages;
+        return new ResponseEntity<>(myMessages, HttpStatus.OK);
     }
 
     public static void main(String[] args) {
