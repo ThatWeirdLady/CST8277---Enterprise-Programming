@@ -18,14 +18,14 @@ public class LoginSession {
     private long validUntil;
 
     public LoginSession(String userId) {
-        this.id = UUID.randomUUID().toString();
+        this();
         this.userId = userId;
-        this.token = UUID.randomUUID().toString();
-        this.validUntil = Instant.now().getEpochSecond() + (60 * 60);
-
     }
 
     public LoginSession() {
+        this.id = UUID.randomUUID().toString();
+        this.token = UUID.randomUUID().toString();
+        this.validUntil = Instant.now().getEpochSecond() + (60 * 60);
     }
 
     /**
@@ -68,6 +68,10 @@ public class LoginSession {
      */
     public void setValidUntil(long validUntil) {
         this.validUntil = validUntil;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

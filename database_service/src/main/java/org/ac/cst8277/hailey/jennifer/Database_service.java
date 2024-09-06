@@ -7,8 +7,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,20 +46,10 @@ public class Database_service {
         return memberRepository.findAll();
     }
 
-    // Login
-    @PostMapping("/auth/login")
-    ResponseEntity<Object> login(@RequestBody LoginCredentials creds) {
-        Member m = new Member();
-        List<Member> mem = getMembers(creds.getUsername());
-        m = mem.get(0);
-
-        if (!m.getPassword().equals(creds.getPassword())) {
-            return new ResponseEntity<Object>("Unauthorized", HttpStatus.UNAUTHORIZED);
-        }
-        LoginSession ls = new LoginSession(m.getId());
-        loginSessionRepository.save(ls);
-
-        return new ResponseEntity<>(ls, HttpStatus.OK);
+    @PostMapping("/sessions")
+    LoginSession createSession(@RequestBody LoginSession session) {
+        session.setId(UUID.randomUUID().toString());
+        return loginSessionRepository.save(session);
     }
 
     // Validate

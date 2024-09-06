@@ -2,6 +2,7 @@ package org.ac.cst8277.hailey.jennifer;
 
 import java.util.Collections;
 import java.util.List;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.reactive.function.client.WebClient;
+
 import org.springframework.web.bind.annotation.RequestHeader;
 import reactor.core.publisher.Mono;
 
@@ -41,6 +45,28 @@ public class MemberManagementService {
                 .retrieve()
                 .bodyToMono(Boolean.class).block();
         return valid;
+    }
+
+    @GetMapping("/token")
+    public ResponseEntity<Object> token(@AuthenticationPrincipal OAuth2User principal) {
+        if (principal == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+
+        LoginSession sess = new LoginSession(principal.getAttribute("login"));
+        LoginSession out = database.post()
+                .uri("/sessions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(sess), LoginSession.class)
+                .retrieve()
+                .bodyToMono(LoginSession.class).block();
+        System.out.println(out.id);
+        System.out.println(out.userId);
+        System.out.println(out.token);
+        System.out.println(out.validUntil);
+
+        var x = Collections.singletonMap("token", out.getToken());
+        return new ResponseEntity<>(x, HttpStatus.OK);
     }
 
     // Get all Members

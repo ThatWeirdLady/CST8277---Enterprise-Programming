@@ -5,10 +5,10 @@ import java.util.UUID;
 import java.time.Instant;
 
 public class LoginSession {
-    private String id;
-    private String userId;
-    private String token;
-    private long validUntil;
+    public String id;
+    public String userId;
+    public String token;
+    public long validUntil;
 
     public LoginSession(String userId) {
         this.id = UUID.randomUUID().toString();

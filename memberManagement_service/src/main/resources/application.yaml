@@ -1,0 +1,11 @@
+server:
+  port: 8088
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: Ov23licGhzvIvvouRTlN
+            clientSecret: 32b55dc109ba5e1556b1733a2263b95954b3aed3
+            authorization-grant-type: authorization_code
