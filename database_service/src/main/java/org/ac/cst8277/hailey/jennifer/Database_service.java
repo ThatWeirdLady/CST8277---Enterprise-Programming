@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,10 +48,16 @@ public class Database_service {
         return memberRepository.findAll();
     }
 
-    @PostMapping("/sessions")
-    LoginSession createSession(@RequestBody LoginSession session) {
-        session.setId(UUID.randomUUID().toString());
-        return loginSessionRepository.save(session);
+    @PostMapping("/login")
+    ResponseEntity<Object> createSession(@RequestBody LoginCredentials login) {
+        List<Member> members = memberRepository.findByUsername(login.getUsername());
+        Member m = members.get(0);
+        if (m == null)
+            return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+
+        LoginSession ls = new LoginSession(m.getId());
+        loginSessionRepository.save(ls);
+        return new ResponseEntity<>(ls, HttpStatus.OK);
     }
 
     // Validate

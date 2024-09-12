@@ -55,7 +55,7 @@ public class MemberManagementService {
 
         LoginSession sess = new LoginSession(principal.getAttribute("login"));
         LoginSession out = database.post()
-                .uri("/sessions")
+                .uri("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(sess), LoginSession.class)
                 .retrieve()
