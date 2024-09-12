@@ -64,6 +64,8 @@ public class message_service {
     @GetMapping("/messages")
     ResponseEntity<Object> getMessages(@RequestHeader("Authorization") String token,
             @RequestParam(required = false) String producerId) {
+        if (token == null)
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         boolean valid = validate(token);
         if (!valid)
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
@@ -76,6 +78,8 @@ public class message_service {
     // Create Message
     @PostMapping("/messages")
     ResponseEntity<Object> createMessage(@RequestHeader("Authorization") String token, @RequestBody Message m) {
+        if (token == null)
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         boolean valid = validate(token);
         if (!valid)
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
@@ -93,6 +97,8 @@ public class message_service {
     // Delete message
     @DeleteMapping("/messages/{id}")
     ResponseEntity<Object> deleteMessage(@RequestHeader("Authorization") String token, @PathVariable String id) {
+        if (token == null)
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         boolean valid = validate(token);
         if (!valid)
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
@@ -107,6 +113,8 @@ public class message_service {
     @GetMapping("/myMessages")
     ResponseEntity<Object> getMyMessages(@RequestHeader("Authorization") String token,
             @RequestHeader("USER-ID") String userId) {
+        if (token == null)
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         boolean valid = validate(token);
         if (!valid)
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
