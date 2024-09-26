@@ -7,5 +7,6 @@ This was completed to satisfy the requirements of CST8277.
 
 ## Technologies Used:
 - SpringBoot Framework 3
-- Dockerfile
+- Docker
+- Kubernetes
 - Postgres DB 16 [Docker Image]
